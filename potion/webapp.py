@@ -174,6 +174,7 @@ def do_query(q_str):
         except:
             pass
 
+    reverse = False
     if(q_str.startswith('!')):
         q_str = q_str[1:]
         reverse = True
