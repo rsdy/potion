@@ -138,7 +138,7 @@ if __name__ == '__main__':
     from sys import argv, stdin
     import code
     if len(argv) == 2 and argv[1] == 'init':
-        db.create_all(bind=engine)
+        db.create_all()
     elif len(argv) == 2 and argv[1] == 'load':
         for line in stdin:
             title, url = line.split('\t')
