@@ -33,8 +33,8 @@ import urllib2
 import httplib
 
 from potion.common import cfg
-from potion.models import db_session, Source, Item
-from potion import proxy
+from potion.models import Source, Item
+from potion import proxy, db
 
 user_agent = cfg.get('fetcher', 'user_agent')
 
@@ -110,7 +110,7 @@ def parseFeed(feed):
             original_url = unicode(item['link'])
 
         # checking duplications
-        if db_session.query(Item). \
+        if db.session.query(Item). \
                 filter(Item.source_id==feed.source_id). \
                 filter(Item.original_url==original_url).first():
             continue
@@ -139,10 +139,10 @@ def parseFeed(feed):
 
         # date as tmp_date?!
         feed.items.append(Item(t, c, original_url, url=u, attributes={'date':tmp_date}))
-        db_session.commit()
+        db.session.commit()
         counter += 1
     feed.updated = d
-    db_session.commit()
+    db.session.commit()
     #feed.save()
     return counter
 
