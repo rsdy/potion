@@ -22,13 +22,14 @@ if __name__ == "__main__":
     from os.path import realpath, dirname
     path.append(realpath(dirname(realpath(__file__))+'/../'))
 
-from flask import Flask, request, render_template, redirect, flash
+from flask import request, render_template, redirect, flash
 from sqlalchemy import not_
-from potion.models import db_session, Item, Source, Query
+from potion.models import Item, Source, Query
 from potion.common import cfg
 from flask.ext.wtf import Form, TextField, Required, SubmitField
 from potion.helpers import Pagination
 
+from potion import app, db
 
 menu_items  = (('/'                 , 'home')
               #,('/doc'              , 'documentation')
@@ -37,9 +38,6 @@ menu_items  = (('/'                 , 'home')
               ,('/top'              , 'top %s unarchived' % cfg.get('app', 'items_per_page'))
               ,('/all'              , 'all')
               )
-
-app = Flask(__name__)
-app.secret_key = cfg.get('app', 'secret_key')
 
 class SourceForm(Form):
     #name, address, source_type, is_public=True, attributes={}
@@ -98,11 +96,11 @@ def sources():
     if request.method == 'POST' and form.validate():
         try:
             s = Source(form.name.data, form.source_type.data, form.address.data)
-            db_session.add(s)
-            db_session.commit()
+            db.session.add(s)
+            db.session.commit()
         except Exception, e:
             flash('[!] Insertion error: %r' % e)
-            db_session.rollback()
+            db.session.rollback()
             return redirect('/sources')
         flash('Source "%s" added' % form.name.data)
         return redirect(request.referrer or '/')
@@ -120,8 +118,8 @@ def source_modify(s_id=0):
         source.name=form.name.data
         source.source_type=form.source_type.data
         source.address=form.address.data
-        db_session.add(source)
-        db_session.commit()
+        db.session.add(source)
+        db.session.commit()
         flash('Source "%s" modified' % form.name.data)
         return redirect('/sources')
     return render_template('sources.html'
@@ -180,7 +178,7 @@ def do_query(q_str):
         reverse = True
 
     rules = q_str.split(',')
-    query = db_session.query(Item).filter(Item.source_id==Source.source_id)
+    query = db.session.query(Item).filter(Item.source_id==Source.source_id)
     for rule in rules:
         if rule.find(':') != -1:
             item, value = rule.split(':', 1)
@@ -223,8 +221,8 @@ def archive(id=0):
         return redirect(request.referrer or '/')
     else:
         ids=[id]
-    db_session.query(Item).filter(Item.item_id.in_(ids)).update({Item.archived: True}, synchronize_session='fetch')
-    db_session.commit()
+    db.session.query(Item).filter(Item.item_id.in_(ids)).update({Item.archived: True}, synchronize_session='fetch')
+    db.session.commit()
     if id:
         return render_template('status.html', messages=['item(%s) archived' % id])
     flash('Successfully archived items: %d' % len(ids))
@@ -251,12 +249,12 @@ def opml_import():
         for f in o:
             if hasattr(f,'xmlUrl'):
                 s = Source(f.title,'feed',f.xmlUrl)
-                db_session.add(s)
+                db.session.add(s)
             else:
                 import_outline_element(f)
 
     import_outline_element(o)
-    db_session.commit()
+    db.session.commit()
     flash('import successed')
     return redirect(request.referrer or '/')
 

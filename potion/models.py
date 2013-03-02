@@ -22,30 +22,24 @@ if __name__ == '__main__':
     from os.path import realpath, dirname
     path.append(realpath(dirname(realpath(__file__))+'/../../'))
 
-from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text, DateTime, Boolean, PickleType
 from sqlalchemy.orm import relationship, scoped_session, sessionmaker, backref
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
 from pickle import dumps, loads
 from potion.common import cfg
 
-engine = create_engine(cfg.get('database', 'connection'))
-db_session = scoped_session(sessionmaker(autocommit=False,
-                                         autoflush=False,
-                                         bind=engine))
+from potion import db
+for clas in ('Model', 'Column', 'Integer', 'String', 'ForeignKey', 'Text', 'DateTime', 'Boolean', 'PickleType',):
+	globals()[clas] = getattr(db, clas)
 
-Base = declarative_base()
-Base.metadata.bind = engine
-Base.query = db_session.query_property()
-
-class User(Base):
+class User(Model):
     __tablename__ = 'users'
     user_id       = Column(Integer, primary_key=True)
     name          = Column(String(511))
     password      = Column(String(511))
     is_active     = Column(Boolean)
 
-class Query(Base):
+class Query(Model):
     __tablename__ = 'queries'
     query_id      = Column(Integer, primary_key=True)
     query_string  = Column(String(8191))
@@ -66,7 +60,7 @@ class Query(Base):
 
 
 
-class Source(Base):
+class Source(Model):
     __tablename__ = 'sources'
     source_id     = Column(Integer, primary_key=True)
     name          = Column(String(511), unique=True)
@@ -102,7 +96,7 @@ class Source(Base):
     def __repr__(self):
         return '[S(Pub:%s)] %s %r %s\n' % (str(self.is_public), self.name, self.attributes, self.address)
 
-class Item(Base):
+class Item(Model):
     __tablename__ = 'items'
     item_id       = Column(Integer, primary_key=True)
     source_id     = Column(Integer, ForeignKey('sources.source_id'))
@@ -144,7 +138,7 @@ if __name__ == '__main__':
     from sys import argv, stdin
     import code
     if len(argv) == 2 and argv[1] == 'init':
-        Base.metadata.create_all(bind=engine)
+        db.create_all(bind=engine)
     elif len(argv) == 2 and argv[1] == 'load':
         for line in stdin:
             title, url = line.split('\t')
