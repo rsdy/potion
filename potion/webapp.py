@@ -46,9 +46,6 @@ class SourceForm(Form):
     address                 = TextField('Address'   , [Required()])
     submit                  = SubmitField('Submit'  , [Required()])
 
-    def __init__(self, *args, **kwargs):
-        kwargs['csrf_enabled'] = False
-        Form.__init__(self, *args, **kwargs)
 
 @app.context_processor
 def contex():
