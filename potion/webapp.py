@@ -131,6 +131,7 @@ def source_modify(s_id=0):
 
 @app.route('/sources/delete/<int:s_id>', methods=['GET'])
 def del_source(s_id):
+    Item.query.filter(Item.source_id==s_id).delete()
     Source.query.filter(Source.source_id==s_id).delete()
     db.session.commit()
     flash('Source removed')
