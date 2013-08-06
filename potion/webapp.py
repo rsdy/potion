@@ -98,7 +98,7 @@ def sources():
             s = Source(form.name.data, form.source_type.data, form.address.data)
             db.session.add(s)
             db.session.commit()
-        except Exception, e:
+        except Exception as e:
             flash('[!] Insertion error: %r' % e)
             db.session.rollback()
             return redirect('/sources')
