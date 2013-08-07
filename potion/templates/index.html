@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="box">
-    <h2>unread items</h2>
-    <p>{{ unreads }}</p>
+ <h2>Queries</h2>
+ <ul>
+  {% for query in queries %}
+    <li><a href="/query/{{ query.query_string }}">{{ query.name }}</a></li>
+  {% else %}
+   <li>No Queries</li>
+  {% endfor %}
+ </ul>
 </div>
 <div class="box">
  <h2>Sources</h2>
@@ -22,5 +28,9 @@
    <input type="submit" value="import" />
   </form>
  </p>
+</div>
+<div class="box">
+    <h2>unread items</h2>
+    <p>{{ unreads }}</p>
 </div>
 {% endblock %}

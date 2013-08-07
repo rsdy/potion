@@ -142,6 +142,7 @@ def parse_query(q):
 def index():
     return render_template('index.html'
                           ,sources  = Source.query.all()
+                          ,queries  = Query.query.all()
                           ,unreads  = Item.query.filter(Item.archived==False).count()
                           )
 
