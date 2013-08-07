@@ -183,7 +183,12 @@ def all(page_num=1):
 
 @app.route('/query', methods=['POST'])
 def query_redirect():
+    name = request.form.get('name')
     q_str = request.form.get('query')
+    if name and q_str:
+        db.session.add(Query(q_str, name))
+        db.session.commit()
+
     return redirect('/query/'+q_str)
 
 @app.route('/query/<path:q_str>', methods=['GET'])
