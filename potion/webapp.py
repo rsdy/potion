@@ -46,6 +46,82 @@ class SourceForm(Form):
     address                 = TextField('Address'   , [Required()])
     submit                  = SubmitField('Submit'  , [Required()])
 
+class QueryForm(Form):
+    name         = TextField('Name' , [Required()])
+    query_string = TextField('Query', [Required()])
+    submit       = SubmitField('Submit'  , [Required()])
+
+def without_rubbish(f):
+    c = f.data.copy()
+    del c['csrf']
+    del c['submit']
+    return c
+
+class ListView(object):
+    def __init__(self, **kwargs):
+        self.__dict__.update(kwargs)
+        name_p = kwargs['name_plural']
+        self.path = path = '/{}'.format(name_p)
+
+        list_rule = path
+        modify_rule = '{}/<int:o_id>'.format(path)
+        delete_rule = '{}/delete/<int:o_id>'.format(path)
+
+        app.add_url_rule(list_rule, list_rule, self.list_and_new_view,
+                         methods=['GET', 'POST'])
+
+        app.add_url_rule(modify_rule, modify_rule, self.list_modify,
+                         methods=['GET', 'POST'])
+
+        app.add_url_rule(delete_rule, delete_rule, self.list_delete,
+                         methods=['GET'])
+
+    def template(self, form, **kwargs):
+        return render_template('{}.html'.format(self.name_plural)
+                              ,form     = form
+                              ,objects  = self.model_t.query.all())
+
+    def handle_post(self, obj, action):
+        try:
+            db.session.add(obj)
+            db.session.commit()
+        except Exception as e:
+            flash('[!] Insertion error: %r' % e)
+            db.session.rollback()
+            return redirect(self.path)
+        else:
+            flash('{} "{}" {}'.format(self.name.capitalize(), obj.name, action))
+            return redirect(request.referrer or '/')
+
+    def list_and_new_view(self):
+        form = self.form_t(request.form)
+        if request.method == 'POST' and form.validate():
+            return self.handle_post(self.model_t(**without_rubbish(form)),
+                                    'added')
+        return self.template(form, mode='add')
+
+    def list_modify(self, o_id=0):
+        obj=self.model_t.query.get(o_id)
+        form=self.form_t(obj=obj)
+        if request.method == 'POST' and form.validate():
+            for k, v in without_rubbish(form).iteritems():
+                setattr(obj, k, v)
+
+            return self.handle_post(obj, 'modified')
+        return self.template(form, mode='modify', menu_path=self.path)
+
+    def list_delete(self, o_id=0):
+        cb = getattr(self, 'del_callback', None)
+        if cb:
+            cb(o_id)
+        self.model_t.query.filter(getattr(self.model_t, '{}_id'.format(self.name))==o_id).delete()
+        db.session.commit()
+        flash('{} removed'.format(self.name.capitalize()))
+        return redirect(request.referrer or '/')
+
+ListView(name='query', name_plural='queries', model_t=Query, form_t=QueryForm)
+ListView(name='source', name_plural='sources', model_t=Source, form_t=SourceForm,
+         del_callback=lambda o: Item.query.filter(Item.source_id==o).delete())
 
 @app.context_processor
 def contex():
@@ -90,53 +166,6 @@ def top(page_num=1):
                           ,menu_path    = '/top' #preserve menu highlight when paging
                           )
 
-@app.route('/sources', methods=['GET', 'POST'])
-def sources():
-    form = SourceForm(request.form)
-    if request.method == 'POST' and form.validate():
-        try:
-            s = Source(form.name.data, form.source_type.data, form.address.data)
-            db.session.add(s)
-            db.session.commit()
-        except Exception as e:
-            flash('[!] Insertion error: %r' % e)
-            db.session.rollback()
-            return redirect('/sources')
-        flash('Source "%s" added' % form.name.data)
-        return redirect(request.referrer or '/')
-    return render_template('sources.html'
-                          ,form     = form
-                          ,sources  = Source.query.all()
-                          ,mode     = 'add'
-                          )
-
-@app.route('/sources/<int:s_id>', methods=['GET', 'POST'])
-def source_modify(s_id=0):
-    source=Source.query.get(s_id)
-    form=SourceForm(obj=source)
-    if request.method == 'POST' and form.validate():
-        source.name=form.name.data
-        source.source_type=form.source_type.data
-        source.address=form.address.data
-        db.session.add(source)
-        db.session.commit()
-        flash('Source "%s" modified' % form.name.data)
-        return redirect('/sources')
-    return render_template('sources.html'
-                          ,form     = form
-                          ,sources  = Source.query.all()
-                          ,mode     = 'modify'
-                          ,menu_path= '/sources' #preserve menu highlight when paging
-                          )
-
-@app.route('/sources/delete/<int:s_id>', methods=['GET'])
-def del_source(s_id):
-    Item.query.filter(Item.source_id==s_id).delete()
-    Source.query.filter(Source.source_id==s_id).delete()
-    db.session.commit()
-    flash('Source removed')
-    return redirect(request.referrer or '/')
-
 @app.route('/all')
 @app.route('/all/<int:page_num>')
 def all(page_num=1):
@@ -149,14 +178,6 @@ def all(page_num=1):
                           ,items        = items
                           ,unarchiveds  = get_unarchived_ids(items)
                           ,menu_path= '/all'
-                          )
-
-@app.route('/queries', methods=['GET'])
-def queries():
-    items = []
-    return render_template('queries.html'
-                          ,queries      = Query.query.all()
-                          ,items        = items
                           )
 
 @app.route('/query', methods=['POST'])

@@ -49,7 +49,7 @@ class Query(Model):
     user          = relationship('User',
                         backref=backref('queries', lazy='dynamic'))
 
-    def __init__(self, query_string, name='', user_id=0):
+    def __init__(self, query_string, name='', user_id=None):
         self.query_string   = query_string
         self.name           = name
         self.user_id        = user_id

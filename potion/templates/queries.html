@@ -1,4 +1,11 @@
-{% extends "base.html" %}
-{% block content %}
- <h2>TODO</h2>
+{% extends "add_and_list_page.html" %}
+{% block items_table %}
+    <tr><th>Name</th><th>Query</th><th>Modify</th><th>Delete</th></tr>
+    {% for query in objects %}
+    <tr><td>{{ query.name }}</td>
+        <td class="center"><a href="/query/{{ query.query_string }}">{{ query.query_string }}</a></td>
+        <td class="center"><a href="/queries/{{ query.query_id }}" class="del_link">x</a></td>
+        <td class="center"><a href="/queries/delete/{{ query.query_id }}" class="del_link">x</a></td>
+    </tr>
+    {% endfor %}
 {% endblock %}
