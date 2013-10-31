@@ -253,7 +253,7 @@ def archive(id=0):
     db.session.query(Item).filter(Item.item_id.in_(ids)).update({Item.archived: True}, synchronize_session='fetch')
     db.session.commit()
     if id:
-        return render_template('status.html', messages=['item(%s) archived' % id])
+        return render_template('status.html', messages=['[archived]'])
     flash('Successfully archived items: %d' % len(ids))
     return redirect(request.referrer or '/')
 
