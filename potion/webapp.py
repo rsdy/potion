@@ -293,5 +293,6 @@ def opml_import():
 if __name__ == "__main__":
     app.run(debug        = cfg.get('server', 'debug')
            ,use_debugger = cfg.get('server', 'debug')
+           ,host         = cfg.get('server', 'host')
            ,port         = int(cfg.get('server', 'port'))
            )
