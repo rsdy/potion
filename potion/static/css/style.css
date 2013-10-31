@@ -23,7 +23,7 @@ input.text { display: block; margin: 2px 16px; width: 400px; }
 #header ul li { list-style: none; float: left; }
 #header ul li a { padding: 10px; color: #eee8d5; }
 
-#footer { position: fixed; bottom: 0; left: 0; right: 0; height: 40px; vertical-align: middle; line-height: 40px; border-top: 1px solid #5B5BC7; background: #073642; padding-right: 10px; }
+#footer { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; vertical-align: middle; line-height: 60px; border-top: 1px solid #5B5BC7; background: #073642; padding-right: 10px; }
 #footer input { border: 0; }
 #footer input[type="submit"] { cursor: pointer; }
 #footer .right { margin: 0 10px; }
@@ -68,4 +68,6 @@ img { max-width: 100% }
     .item_name { font-size: 22pt; }
     .item_body { padding:3.2em; clear:both; font-size: 16pt; line-height:1.5em; }
     .item_body p { max-width: 100% }
+    #footer { height: 60px; line-height: 60px; padding: 10px; }
+    #footer input { font-size: 1.4em;}
 }
