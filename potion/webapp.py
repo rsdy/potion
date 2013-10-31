@@ -26,7 +26,9 @@ from flask import request, render_template, redirect, flash
 from sqlalchemy import not_
 from potion.models import Item, Source, Query
 from potion.common import cfg
-from flask.ext.wtf import Form, TextField, Required, SubmitField
+from flask_wtf import Form
+from wtforms.fields import TextField, SubmitField
+from wtforms.validators import Required
 from potion.helpers import Pagination
 
 from potion import app, db
