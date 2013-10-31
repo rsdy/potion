@@ -1,7 +1,6 @@
 body, div, table, tr, td, h1, h2, h3, h4, pre, p { padding: 0; margin: 0; }
 
-body { background: #002b36; color: #eee8d5; font-family: Helvetica; }
-
+body { background: #002b36; color: #839496; font-family: sans-serif; }
 
 h2 { text-transform: uppercase; }
 input { margin: 0; padding: 0.5em; background: #073642; color: #eee8d5; font-weight: bold; border: 1px solid #444444; }
@@ -61,3 +60,7 @@ input.text { display: block; margin: 2px 16px; width: 400px; }
 .center { text-align: center; }
 
 .pagination { width:100%; text-align:center; margin:10px; }
+
+@media screen and (max-width: 1200px) {
+body { font-family: serif; }
+.item_body { font-size: 16pt;}
