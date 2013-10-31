@@ -1,6 +1,6 @@
 body, div, table, tr, td, h1, h2, h3, h4, pre, p { padding: 0; margin: 0; }
 
-body { background: #002b36; color: #839496; font-family: sans-serif; }
+body { background: #002b36; color: #eee8d5; font-family: sans-serif; }
 
 h2 { text-transform: uppercase; }
 input { margin: 0; padding: 0.5em; background: #073642; color: #eee8d5; font-weight: bold; border: 1px solid #444444; }
