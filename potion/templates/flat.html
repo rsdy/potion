@@ -8,8 +8,7 @@
  <div class="item_head">
   <ul>
    <li>{% if item.archived %}[archived]{% else %}<iframe src="" name="archive-{{ item.item_id }}" frameborder=0 seamless="seamless"
-	   style="width: 5em;"
-	   srcdoc='<a href="/archive/{{ item.item_id }}" style="color: #fff; font-size: 0.8em;" class="archive_link" target="archive-{{ item.item_id }}">archive</a>'>
+    srcdoc='<a href="/archive/{{ item.item_id }}" style="color: #fff; font-size: 0.8em; margin:0; padding:0;" class="archive_link" target="archive-{{ item.item_id }}">archive</a>'>
    </iframe>{% endif %}</li>
    {% for k,attr in item.attributes.iteritems() %}
    <li>{{ k }}: {{ attr }}</li>

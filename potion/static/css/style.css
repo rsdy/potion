@@ -48,6 +48,7 @@ input.text { display: block; margin: 2px 16px; width: 400px; }
 .item_source { padding: 0 0 4px 8px; }
 
 .item_head { width: 100%; }
+.item_head iframe { width: 5em; height: 4em; overflow: hidden; }
 .item_head ul { margin: 0; padding: 0; }
 .item_head ul li { list-style: none; float: right; padding: 4px; }
 
@@ -60,7 +61,11 @@ input.text { display: block; margin: 2px 16px; width: 400px; }
 .center { text-align: center; }
 
 .pagination { width:100%; text-align:center; margin:10px; }
+img { max-width: 100% }
 
 @media screen and (max-width: 1200px) {
-body { font-family: serif; }
-.item_body { font-size: 16pt;}
+    body { font-family: serif; }
+    .item_name { font-size: 22pt; }
+    .item_body { padding:3.2em; clear:both; font-size: 16pt; line-height:1.5em; }
+    .item_body p { max-width: 100% }
+}
